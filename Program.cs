@@ -132,10 +132,81 @@ namespace LINQed_list
                     IEnumerable<int> notSquares =
                         wheresSquaredo.TakeWhile(number => ((Math.Ceiling(Math.Sqrt(number))*Math.Ceiling((Math.Sqrt(number))) != number)));
 
-                    foreach (int number in notSquares) {
-                        Console.WriteLine($"The numbers occuring before the first perfect square are: {number}");
+                    // foreach (int number in notSquares) {
+                    //     Console.WriteLine($"The numbers occuring before the first perfect square are: {number}");
+                    // }
+                    Console.WriteLine($"The numbers occuring before the first perfect square are: {String.Join(", ", notSquares)}");
+                    Console.WriteLine("--------");
+
+
+
+
+            /* Using Custom Types */
+
+                // Build a collection of customers who are millionaires
+
+                    List<Customer> customers = new List<Customer>() {
+                        new Customer(){ Name="Bob Lesman", Balance=80345.66, Bank="FTB"},
+                        new Customer(){ Name="Joe Landy", Balance=9284756.21, Bank="WF"},
+                        new Customer(){ Name="Meg Ford", Balance=487233.01, Bank="BOA"},
+                        new Customer(){ Name="Peg Vale", Balance=7001449.92, Bank="BOA"},
+                        new Customer(){ Name="Mike Johnson", Balance=790872.12, Bank="WF"},
+                        new Customer(){ Name="Les Paul", Balance=8374892.54, Bank="WF"},
+                        new Customer(){ Name="Sid Crosby", Balance=957436.39, Bank="FTB"},
+                        new Customer(){ Name="Sarah Ng", Balance=56562389.85, Bank="FTB"},
+                        new Customer(){ Name="Tina Fey", Balance=1000000.00, Bank="CITI"},
+                        new Customer(){ Name="Sid Brown", Balance=49582.68, Bank="CITI"}
+                    };
+
+                    List<BankEntry> millionaireReport = customers.Where(customer => customer.Balance >= 1000000)
+                    .Select(customer =>
+                        new BankEntry {
+                            Name = customer.Name,
+                            Balance = customer.Balance,
+                            Bank = customer.Bank
+                        }
+                    ).ToList();
+
+                    foreach (BankEntry entry in millionaireReport)
+                    {
+                        Console.WriteLine($"{entry.Name} is a millionaire.");
                     }
 
+                    Console.WriteLine("--------");
+
+
+                    // Given the same customer set, display how many millionaires per bank.
+
+                    IEnumerable<BankCount> bankMillionaires = (from millionaire in millionaireReport
+                        group millionaire by millionaire.Bank into bankGroup
+                        select new BankCount {
+                            Name = bankGroup.Key,
+                            Count = bankGroup.Count(millionaire => millionaire.Bank == bankGroup.Key)
+                        });
+
+                    Console.WriteLine("Number of millionaires at each bank:");
+                    foreach (BankCount entry in bankMillionaires) {
+                        Console.WriteLine($"{entry.Name}: {entry.Count}");
+                    }
             }
     }
+
+    public class Customer {
+        public string Name { get; set; }
+        public double Balance { get; set; }
+        public string Bank { get; set; }
+    }
+
+    internal class BankEntry {
+        public string Name { get; set; }
+        public double Balance { get; set; }
+        public string Bank { get; set; }
+    }
+
+    internal class BankCount {
+        public string Name { get; set; }
+        public int Count { get; set; }
+    }
 }
+
+
