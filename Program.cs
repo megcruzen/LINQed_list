@@ -188,7 +188,61 @@ namespace LINQed_list
                     foreach (BankCount entry in bankMillionaires) {
                         Console.WriteLine($"{entry.Name}: {entry.Count}");
                     }
+                    Console.WriteLine("--------");
+
+            /*
+                TASK:
+                As in the previous exercise, you're going to output the millionaires,
+                but you will also display the full name of the bank. You also need
+                to sort the millionaires' names, ascending by their LAST name.
+
+                Example output:
+                    Tina Fey at Citibank
+                    Joe Landy at Wells Fargo
+                    Sarah Ng at First Tennessee
+                    Les Paul at Wells Fargo
+                    Peg Vale at Bank of America
+                */
+
+                 // Create some banks and store in a List
+                    List<Bank> banks = new List<Bank>() {
+                        new Bank(){ Name="First Tennessee", Symbol="FTB"},
+                        new Bank(){ Name="Wells Fargo", Symbol="WF"},
+                        new Bank(){ Name="Bank of America", Symbol="BOA"},
+                        new Bank(){ Name="Citibank", Symbol="CITI"},
+                    };
+
+                /*
+                    You will need to use the `Where()`and `Select()` methods to generate instances of the following class.
+
+                    public class ReportItem
+                    {
+                        public string CustomerName { get; set; }
+                        public string BankName { get; set; }
+                    }
+                */
+
+                IEnumerable<ReportItem> millionaireBanks = (from customer in customers
+                    where customer.Balance >= 1000000
+                    orderby customer.Name.Split(' ')[1]
+                    join bank in banks on customer.Bank equals bank.Symbol
+                    select new ReportItem {
+                        CustomerName = customer.Name,
+                        BankName = bank.Name
+                    });
+
+                Console.WriteLine("Millionaires and their banks:");
+                foreach (var item in millionaireBanks)
+                {
+                    Console.WriteLine($"{item.CustomerName} at {item.BankName}");
+                }
+
             }
+    }
+
+    public class Bank {
+        public string Symbol { get; set; }
+        public string Name { get; set; }
     }
 
     public class Customer {
@@ -206,6 +260,10 @@ namespace LINQed_list
     internal class BankCount {
         public string Name { get; set; }
         public int Count { get; set; }
+    }
+    public class ReportItem {
+        public string CustomerName {get; set;}
+        public string BankName {get; set;}
     }
 }
 
